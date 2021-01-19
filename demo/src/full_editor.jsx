@@ -48,7 +48,7 @@ class EditorComponent extends React.Component {
     bgOptions: {
       service: {
         apiKey: 'Your key',
-        sourcePath: "//cdn.prowritingaid.com/beyondgrammar/2.0.2893/dist/hayt/bundle.js"
+        sourcePath: "//cdn.prowritingaid.com/beyondgrammar/2.0.7546/dist/hayt/bundle.js"
       },
       grammar: {
         languageFilter: ['en-US', 'en-GB'],
@@ -84,3 +84,15 @@ beyondGrammar(jQuery, jQuery["FroalaEditor"] || FroalaEditorCore);
 ReactDOM.render(<EditorComponent/>, document.getElementById('editor'));
 
 import 'file?name=[name].[ext]!./full_editor.html';
+
+window.addEventListener("@pwa/user-action", (e)=>{
+  console.log(e.detail);
+  /*
+  * {
+  *   name :  "correction" | "thesaurus" | "ignore" | "add-to-dict",
+  *   from: string,
+  *   to  : string,
+  *   element: HTMLElement ///editable element textarea / div[contenteditable]
+  * }
+  * */
+})
