@@ -24,7 +24,10 @@
   },
   "dependencies": {
     "create-react-class": "^15.5.2",
-    "froala-editor": "^2.7.6"
+    "font-awesome": "^4.7.0",
+    "froala-editor": "^3.2.3",
+    "jquery": "^3.5.1",
+    "typescript": "^4.1.2"
   },
   "devDependencies": {
     "babel-core": "^6.6.0",

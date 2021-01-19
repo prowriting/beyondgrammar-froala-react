@@ -1,7 +1,19 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 // export BeyondGrammar as a function instead of a plugin
-function beyondGrammar($) {
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+exports.__esModule = true;
+exports.beyondGrammar = void 0;
+function beyondGrammar($, FroalaEditor) {
     var settings = {
         service: {
             i18n: { en: "./libs/i18n-en.js" },
@@ -16,7 +28,8 @@ function beyondGrammar($) {
             checkStyle: true,
             checkSpelling: true,
             checkGrammar: true,
-            checkerIsEnabled: true
+            checkerIsEnabled: true,
+            heavyGrammar: true
         },
         hideDisable: false
     };
@@ -66,9 +79,9 @@ function beyondGrammar($) {
     var browserLanguage = window.navigator.userLanguage || window.navigator.language;
     var language = browserLanguage == "en-GB" ? 'en-GB' : 'en-US';
     var checker = [];
-    $.FroalaEditor.DefineIconTemplate('beyond-grammar', '<i class="beyond-grammar-toolbar-icon"></i>');
-    $.FroalaEditor.DefineIcon('beyond-grammar-icon', { NAME: 'icon', template: "beyond-grammar" });
-    $.FroalaEditor.RegisterCommand('BeyondGrammar', {
+    FroalaEditor.DefineIconTemplate('beyond-grammar', '<i class="beyond-grammar-toolbar-icon"></i>');
+    FroalaEditor.DefineIcon('beyond-grammar-icon', { NAME: 'icon', template: "beyond-grammar" });
+    FroalaEditor.RegisterCommand('BeyondGrammar', {
         title: 'BeyondGrammar Checking',
         type: 'dropdown',
         icon: 'beyond-grammar-icon',
@@ -106,7 +119,7 @@ function beyondGrammar($) {
             }
         }
     });
-    $.FroalaEditor.PLUGINS.BeyondGrammarPlugin = function (editor) {
+    FroalaEditor.PLUGINS.BeyondGrammarPlugin = function (editor) {
         var states = ["loading", "connected", "disconnected", "off"];
         var labelsByState = {
             "loading": "BeyondGrammar is loading",
@@ -118,11 +131,11 @@ function beyondGrammar($) {
             state: "",
             checker: null,
             _init: function () {
-                if (!editor.$el.is(":visible")) {
-                    // console.log('Not starting RTG as element is not visible: ');
+                if (!$(editor.$el[0]).is(":visible")) {
+                    //console.log('Not starting RTG as element is not visible: ');
                     return;
                 }
-                // console.log('Starting froala on element: '+editor.$el.attr('name'));
+                //console.log('Starting froala on element: '+editor.$el.attr('name'));
                 if (editor.opts && editor.opts.bgOptions) {
                     var opts = editor.opts.bgOptions;
                     var grammar = opts.grammar || {};
@@ -131,7 +144,7 @@ function beyondGrammar($) {
                     if (!grammar.languageIsoCode) {
                         grammar.languageIsoCode = language;
                     }
-                    settings.grammar = grammar;
+                    settings.grammar = __assign(__assign({}, grammar), { heavyGrammar: true });
                     //Service options applying
                     settings.service.sourcePath = service.sourcePath || settings.service.sourcePath;
                     settings.service.serviceUrl = service.serviceUrl || settings.service.serviceUrl;
@@ -273,8 +286,8 @@ function beyondGrammar($) {
                 document.body.appendChild(script);
             }
         };
-        $.FroalaEditor.COMMANDS["BeyondGrammar"].callback = function (cmd, val) { return plugin.onLanguageOptionClick(cmd, val); };
-        $.FroalaEditor.COMMANDS["BeyondGrammar"].refresh = function ($btn) { return plugin.onRefreshButton($btn); };
+        FroalaEditor.COMMANDS["BeyondGrammar"].callback = function (cmd, val) { return plugin.onLanguageOptionClick(cmd, val); };
+        FroalaEditor.COMMANDS["BeyondGrammar"].refresh = function ($btn) { return plugin.onRefreshButton($btn); };
         return plugin;
     };
 }

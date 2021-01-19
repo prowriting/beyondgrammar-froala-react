@@ -15,6 +15,10 @@ import FroalaEditorView from 'react-froala-wysiwyg/FroalaEditorView';
 import './beyond-grammar/styles/froala-plugin-styles.css';
 import { beyondGrammar } from './beyond-grammar/beyond-grammar-plugin';
 
+// Exposing Froala v3 Core in window object, for accessing it from compiled jsx components
+import * as FroalaEditorCore from "froala-editor";
+window["FroalaEditorCore"] = FroalaEditorCore.default;
+
 // Render Froala Editor component.
 class EditorComponent extends React.Component {
   constructor() {
@@ -43,7 +47,8 @@ class EditorComponent extends React.Component {
     toolbarButtonsXS: this.buttons,
     bgOptions: {
       service: {
-        apiKey: 'Your key'
+        apiKey: 'Your key',
+        sourcePath: "//cdn.prowritingaid.com/beyondgrammar/2.0.2893/dist/hayt/bundle.js"
       },
       grammar: {
         languageFilter: ['en-US', 'en-GB'],
@@ -73,7 +78,9 @@ class EditorComponent extends React.Component {
 }
 
 // [pwa] start the plugin
-beyondGrammar(jQuery);
+ 
+beyondGrammar(jQuery, jQuery["FroalaEditor"] || FroalaEditorCore);
+
 ReactDOM.render(<EditorComponent/>, document.getElementById('editor'));
 
 import 'file?name=[name].[ext]!./full_editor.html';

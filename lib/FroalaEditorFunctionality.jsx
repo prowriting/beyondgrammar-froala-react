@@ -75,7 +75,15 @@ export default class FroalaEditorFunctionality extends React.Component {
     this.setContent(true);
 
     this.registerEvents();
-    this.$editor = this.$element.froalaEditor(this.config).data('froala.editor').$el;
+    
+    if(this.$element.froalaEditor){
+      // Froala v2
+      this.$editor = (this.$element.froalaEditor)(this.config).data('froala.editor').$el;
+    } else {
+      // Froala v3
+      const FroalaEditorCore = window["FroalaEditorCore"];
+      this.$editor = (FroalaEditorCore)(this.$element[0], this.config);
+    }
     this.initListeners();
   }
 
