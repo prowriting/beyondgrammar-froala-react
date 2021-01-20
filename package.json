@@ -39,7 +39,7 @@
     "css-loader": "^0.25.0",
     "exports-loader": "^0.6.2",
     "file-loader": "^0.9.0",
-    "highlight.js": "^9.3.0",
+    "highlight.js": "^10.4.1",
     "imports-loader": "^0.6.4",
     "jsdom": "^9.0.0",
     "mocha": "^3.0.0",
