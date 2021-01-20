@@ -1,6 +1,7 @@
 // export BeyondGrammar as a function instead of a plugin
-export function beyondGrammar($){
 
+export function beyondGrammar($, FroalaEditor){
+    FroalaEditor = FroalaEditor || $['FroalaEditor'];
     let settings = {
         service : {
             i18n : { en : "./libs/i18n-en.js" },
@@ -15,7 +16,8 @@ export function beyondGrammar($){
             checkStyle: true,
             checkSpelling: true,
             checkGrammar: true,
-            checkerIsEnabled: true
+            checkerIsEnabled: true,
+            heavyGrammar: true
         },
         hideDisable: false
     };
@@ -32,9 +34,9 @@ export function beyondGrammar($){
         if (languages) {
             languages
                 .forEach((lang)=> {
-                var bullet = lang.isoCode == language ? ' •' : '';
-                html += '<li role="presentation"><a class="fr-command" tabindex="-1" role="option" data-cmd="BeyondGrammar" data-param1="' + lang.isoCode + '" title="' + lang.displayName + '" aria-selected="false">' + lang.displayName + bullet + '</a></li>';
-            });
+                    var bullet = lang.isoCode == language ? ' •' : '';
+                    html += '<li role="presentation"><a class="fr-command" tabindex="-1" role="option" data-cmd="BeyondGrammar" data-param1="' + lang.isoCode + '" title="' + lang.displayName + '" aria-selected="false">' + lang.displayName + bullet + '</a></li>';
+                });
         }else{
             console.log('No languages available');
         }
@@ -60,7 +62,7 @@ export function beyondGrammar($){
                 settings.languageIsoCode=(<any>event).detail.language;
                 c.setSettings(settings);
             });
-            },
+        },
         false);
 
     window.addEventListener(
@@ -78,9 +80,9 @@ export function beyondGrammar($){
     let language = browserLanguage=="en-GB"?'en-GB':'en-US';
     let checker = [];
 
-    $.FroalaEditor.DefineIconTemplate('beyond-grammar', '<i class="beyond-grammar-toolbar-icon"></i>');
-    $.FroalaEditor.DefineIcon('beyond-grammar-icon', { NAME: 'icon', template : "beyond-grammar"});
-    $.FroalaEditor.RegisterCommand('BeyondGrammar', {
+    FroalaEditor.DefineIconTemplate('beyond-grammar', '<i class="beyond-grammar-toolbar-icon"></i>');
+    FroalaEditor.DefineIcon('beyond-grammar-icon', { NAME: 'icon', template : "beyond-grammar"});
+    FroalaEditor.RegisterCommand('BeyondGrammar', {
         title: 'BeyondGrammar Checking',
         type: 'dropdown',
         icon: 'beyond-grammar-icon',
@@ -123,8 +125,8 @@ export function beyondGrammar($){
         }
     });
 
-    $.FroalaEditor.PLUGINS.BeyondGrammarPlugin = function (editor){
-        let states = [ "loading", "connected", "disconnected", "off" ];        
+    FroalaEditor.PLUGINS.BeyondGrammarPlugin = function (editor){
+        let states = [ "loading", "connected", "disconnected", "off" ];
         let labelsByState = {
             "loading" : "BeyondGrammar is loading",
             "connected" : "BeyondGrammar is online (click to change language)",
@@ -135,32 +137,32 @@ export function beyondGrammar($){
         let plugin = {
             state : "",
             checker : null,
-            
+
             _init : ()=>{
-                if (!editor.$el.is(":visible")){
-                    // console.log('Not starting RTG as element is not visible: ');
+                if (!$(editor.$el[0]).is(":visible")){
+                    //console.log('Not starting RTG as element is not visible: ');
                     return;
                 }
-                // console.log('Starting froala on element: '+editor.$el.attr('name'));
+                //console.log('Starting froala on element: '+editor.$el.attr('name'));
 
                 if (editor.opts && editor.opts.bgOptions){
                     let opts = editor.opts.bgOptions;
                     let grammar = opts.grammar || {};
                     let service = opts.service || {};
-                    
+
                     //Grammar options applying
                     if (!grammar.languageIsoCode){
                         grammar.languageIsoCode = language;
                     }
 
-                    settings.grammar = grammar;
+                    settings.grammar = { ...grammar, heavyGrammar: true };
 
                     //Service options applying
                     settings.service.sourcePath = service.sourcePath || settings.service.sourcePath;
                     settings.service.serviceUrl = service.serviceUrl || settings.service.serviceUrl;
                     settings.service.userId = service.userId;
                     settings.service.apiKey = service.apiKey;
-                    
+
                     //Froala specific options
                     settings.hideDisable = (typeof opts.disableHidden == "undefined") ? false : opts.disableHidden;
                 }
@@ -171,14 +173,14 @@ export function beyondGrammar($){
                     $html.find('.pwa-mark,.pwa-mark-done').contents().unwrap();
                     return $html.html();
                 });
-                
+
                 editor.events.on("commands.before", (command)=>{
                     //before code view is switched on
                     if(command == "html" && !editor.codeView.isActive()){
                         plugin.checker.unbindChangeEvents();
                     }
                 });
-                
+
                 editor.events.on('commands.after', (command) => {
                     //right after codeview is switched off
                     if (command == 'html' && !editor.codeView.isActive()){
@@ -211,12 +213,12 @@ export function beyondGrammar($){
                     });
                 }
             },
-            
+
             onRefreshButton : ($btn)=>{
                 $btn.find(".beyond-grammar-toolbar-icon").removeClass(states.join(" ")).addClass(plugin.state);
                 $btn.data("title", labelsByState[plugin.state]);
             },
-            
+
             onToolbarButtonClick : ()=>{
                 if( plugin.state == "loading" ) {
                     return;
@@ -258,13 +260,13 @@ export function beyondGrammar($){
                 // Create the event.
                 var event = document.createEvent('CustomEvent');
 
-				// Define that the event name is 'build'.
+                // Define that the event name is 'build'.
                 //console.log('Init language change event');
                 event.initCustomEvent('pwa-language-change', true, true, {
                     language: val
                 });
 
-				// target can be any Element or other EventTarget.
+                // target can be any Element or other EventTarget.
                 window.dispatchEvent(event);
             },
 
@@ -276,7 +278,7 @@ export function beyondGrammar($){
 
                 plugin.checker.setSettings(settings.grammar);
                 checker.push(plugin.checker);
-                
+
                 plugin.checker.onConnectionChange = (status)=>{
                     plugin.setState(status);
                 };
@@ -297,7 +299,7 @@ export function beyondGrammar($){
 
                 plugin.checker.init().then(()=>plugin.checker.activate());
             },
-            
+
             deactivate : ()=>{
                 var indexOf = checker.indexOf(plugin);
                 if (indexOf>=0){
@@ -307,12 +309,12 @@ export function beyondGrammar($){
                 plugin.checker.onConnectionChange = null;
                 plugin.setState("off");
             },
-            
+
             setState : ( state : string )=>{
                 plugin.state = state;
                 editor.button.bulkRefresh();
             },
-            
+
             loadScript : (src, onComplete)=>{
                 let script = document.createElement("script");
                 script.onload = onComplete || (()=>console.log(`"${src}" was loaded`));
@@ -321,9 +323,9 @@ export function beyondGrammar($){
             }
         };
 
-        $.FroalaEditor.COMMANDS["BeyondGrammar"].callback = (cmd,val)=>plugin.onLanguageOptionClick(cmd,val);
-        $.FroalaEditor.COMMANDS["BeyondGrammar"].refresh = ($btn)=>plugin.onRefreshButton($btn);
-        
+        FroalaEditor.COMMANDS["BeyondGrammar"].callback = (cmd,val)=>plugin.onLanguageOptionClick(cmd,val);
+        FroalaEditor.COMMANDS["BeyondGrammar"].refresh = ($btn)=>plugin.onRefreshButton($btn);
+
         return plugin
     };
 }
