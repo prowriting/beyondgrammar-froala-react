@@ -1,6 +1,9 @@
-Building of project
-------------------
+Full Rebuild of project
+------------------------
+`npm start`
 
+Building of project by Steps
+------------------
 0. `cd demo/src/beyond-grammar/` -> `tsc beyond-grammar-plugin.ts`, for compiling beyond-grammar-plugin.ts to js
 0. return to root `cd ../../..`
 0. call `npm run build` - for pre-building React Components from `/lib`

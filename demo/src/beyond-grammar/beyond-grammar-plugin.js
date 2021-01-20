@@ -14,6 +14,7 @@ var __assign = (this && this.__assign) || function () {
 exports.__esModule = true;
 exports.beyondGrammar = void 0;
 function beyondGrammar($, FroalaEditor) {
+    FroalaEditor = FroalaEditor || $['FroalaEditor'];
     var settings = {
         service: {
             i18n: { en: "./libs/i18n-en.js" },
